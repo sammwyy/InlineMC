@@ -46,10 +46,19 @@ read_cached_value() {
   return 0
 }
 
+is_valid_username() {
+  [[ "$1" =~ ^[A-Za-z0-9_]{3,16}$ ]]
+}
+
+is_valid_version() {
+  [[ "$1" =~ ^[A-Za-z0-9._-]+$ ]]
+}
+
 prompt_value() {
   local label="$1"
   local cached="$2"
   local fallback="$3"
+  local validator="${4:-}"
   local input=""
   local value=""
 
@@ -67,6 +76,9 @@ prompt_value() {
 
     if [ -z "$value" ]; then
       echo "$label is required." >&2
+    elif [ -n "$validator" ] && ! "$validator" "$value"; then
+      echo "$label is invalid." >&2
+      value=""
     fi
   done
 
@@ -78,12 +90,20 @@ mkdir -p "$MC_HOME" "$CACHE_DIR" "$PLAN_DIR"
 LAST_USERNAME="$(read_cached_value "$LAST_USERNAME_FILE")"
 LAST_VERSION="$(read_cached_value "$LAST_VERSION_FILE")"
 
+if ! is_valid_username "$LAST_USERNAME"; then
+  LAST_USERNAME=""
+fi
+
+if ! is_valid_version "$LAST_VERSION"; then
+  LAST_VERSION=""
+fi
+
 echo "===================="
 echo "      InlineMC"
 echo "===================="
 
-PLAYER_NAME="$(prompt_value "username" "$LAST_USERNAME" "")"
-REQUESTED_VERSION="$(prompt_value "version" "$LAST_VERSION" "1.21.1")"
+PLAYER_NAME="$(prompt_value "username" "$LAST_USERNAME" "" is_valid_username)"
+REQUESTED_VERSION="$(prompt_value "version" "$LAST_VERSION" "1.21.1" is_valid_version)"
 
 printf '%s\n' "$PLAYER_NAME" > "$LAST_USERNAME_FILE"
 printf '%s\n' "$REQUESTED_VERSION" > "$LAST_VERSION_FILE"
