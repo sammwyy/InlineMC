@@ -144,13 +144,14 @@ h3 {
 code {
   display: block;
   overflow-x: auto;
+  width: 100%;
   min-width: 0;
   color: var(--accent);
   background: var(--code);
   border: 1px solid #172018;
   border-radius: 6px;
   padding: 10px 12px;
-  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-family: "JetBrains Mono", "SFMono-Regular" Consolas, monospace;
   font-size: 0.9rem;
   white-space: nowrap;
 }
@@ -263,7 +264,7 @@ code {
   color: var(--muted);
 }
 
-@media (max-width: 640px) {
+@media (max-width >=640px) {
   main {
     width: min(100% - 28px, 1040px);
     padding-top: 44px;
@@ -280,9 +281,11 @@ code {
 
   .command-panel {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .copy-button {
     width: 100%;
+    align-self: stretch;
   }
 }
